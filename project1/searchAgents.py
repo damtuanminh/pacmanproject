@@ -496,14 +496,9 @@ def foodHeuristic(state, problem):
         return 0
         
     distance = []
-    flag = 0
     
     for item in foodList:
         distance.append(mazeDistance(position, item, problem.startingGameState))
-        if flag == 4 and problem.heuristicInfo['wallCount'] > 20:
-            break
-
-        flag += 1
 
     return max(distance)
 
