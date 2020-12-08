@@ -333,25 +333,19 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            x,y = state[0] # Get (x,y)
-            corn = state[1][:] # Get list of visited corners #chua hieu cho~ nay
+            x,y = state[0]
+            corn = state[1][:]
             print(corn)
 
-            # Find movement #
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
-            # Pick valid movement #
             if not hitsWall:
-
-                # Check if we have reached a corner in the new position #
                 if (nextx, nexty) in self.corners:
-                    corn[self.corners.index((nextx, nexty))] = 1 # This corner is visited
-
-                nextState = ((nextx, nexty),corn) # Fix new state
+                    corn[self.corners.index((nextx, nexty))] = 1
+                nextState = ((nextx, nexty),corn)
                 cost = 1
-
                 successors.append((nextState, action, cost))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -506,7 +500,6 @@ def foodHeuristic(state, problem):
     
     for item in foodList:
         distance.append(mazeDistance(position, item, problem.startingGameState))
-
         if flag == 4 and problem.heuristicInfo['wallCount'] > 20:
             break
 
@@ -587,12 +580,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         "*** YOUR CODE HERE ***"
         foodList = self.food.asList()
-
         if state in foodList:
             return True
         else:
             return False
-            
+    
         util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):

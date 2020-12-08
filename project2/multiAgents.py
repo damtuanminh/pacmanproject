@@ -78,11 +78,10 @@ class ReflexAgent(Agent):
         for food in newFood.asList():
             minFoodist = min(minFoodist, manhattanDistance(newPos, food))
 
-        # avoid ghost if too close
         for ghost in successorGameState.getGhostPositions():
             if (manhattanDistance(newPos, ghost) < 2):
                 return -float('inf')
-        # reciprocal
+
         return successorGameState.getScore() + 1.0/minFoodist
 #        return successorGameState.getScore()
 
@@ -271,29 +270,29 @@ def betterEvaluationFunction(currentGameState):
     newCapsules = currentGameState.getCapsules()
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-    closestGhost = min([manhattanDistance(newPos, ghost.getPosition()) for ghost in newGhostStates])
+    nearestGhost = min([manhattanDistance(newPos, ghost.getPosition()) for ghost in newGhostStates])
     if newCapsules:
-        closestCapsule = min([manhattanDistance(newPos, caps) for caps in newCapsules])
+        nearestCapsule = min([manhattanDistance(newPos, capsule) for capsule in newCapsules])
     else:
-        closestCapsule = 0
+        nearestCapsule = 0
 
-    if closestCapsule:
-        closest_capsule = -20 / closestCapsule
+    if nearestCapsule:
+        closetCapsule = -20 / nearestCapsule
     else:
-        closest_capsule = 200
+        closetCapsule = 200
 
-    if closestGhost:
-        ghost_distance = -2 / closestGhost
+    if nearestGhost:
+        ghostDistance = -2 / nearestGhost
     else:
-        ghost_distance = -500
+        ghostDistance = -500
 
     foodList = newFood.asList()
     if foodList:
-        closestFood = min([manhattanDistance(newPos, food) for food in foodList])
+        nearestFood = min([manhattanDistance(newPos, food) for food in foodList])
     else:
-        closestFood = 0
+        nearestFood = 0
 
-    return -1.5 * closestFood + ghost_distance - 20 * len(foodList) + closest_capsule
+    return -1.5 * nearestFood + ghostDistance - 20 * len(foodList) + closetCapsule
     # util.raiseNotDefined()
 
 # Abbreviation
