@@ -74,16 +74,15 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        minFoodist = float("inf")
+        minFood = float("inf")
         for food in newFood.asList():
-            minFoodist = min(minFoodist, manhattanDistance(newPos, food))
+            minFood = min(minFood, manhattanDistance(newPos, food))
 
-        # avoid ghost if too close
+        #avoid ghost if too close 
         for ghost in successorGameState.getGhostPositions():
             if (manhattanDistance(newPos, ghost) < 2):
                 return -float('inf')
-        # reciprocal
-        return successorGameState.getScore() + 1.0/minFoodist
+        return successorGameState.getScore() + 1.0/minFood
 #        return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
@@ -148,20 +147,24 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         def minimax(state, depth, agentIndex):
             if agentIndex == state.getNumAgents():
+                #return evaluationFunction if in last layer
                 if depth == self.depth:
                     return self.evaluationFunction(state)
+                #recursion in next depth
                 else:
                     return minimax(state, depth + 1, 0)
             else:
-                moves = state.getLegalActions(agentIndex)
-                if len(moves) == 0:
+                movements = state.getLegalActions(agentIndex)
+                if len(movements) == 0:
                     return self.evaluationFunction(state)
-                next = (minimax(state.generateSuccessor(agentIndex, move), depth, agentIndex + 1) for move in moves)
+                nextNode = (minimax(state.generateSuccessor(agentIndex, movement), depth, agentIndex + 1) for movement in movements)
+                #return max value if agent is pacman
                 if agentIndex == 0:
-                    return max(next)
+                    return max(nextNode)
                 else:
-                    return min(next)
-
+                    return min(nextNode)
+ 
+        #return max value in legal action list of initialize state 
         result = max(gameState.getLegalActions(0), key=lambda x: minimax(gameState.generateSuccessor(0, x), 1, 1))
         return result
 
@@ -175,43 +178,42 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        def minValue(gameState, agentID, depth, a, b):
-
+        def minValue(gameState, agentID, depth, alpha, beta):
             actList = gameState.getLegalActions(agentID)
             value = float("inf")
-            bestAct = None
+            bestAction = None
             if len(actList) == 0:
                 return (self.evaluationFunction(gameState), None)
             for action in actList:
                 if (agentID == gameState.getNumAgents() - 1):
-                    succ = maxValue(gameState.generateSuccessor(agentID, action), depth + 1, a, b)[0]
+                    successorValue = maxValue(gameState.generateSuccessor(agentID, action), depth + 1, alpha, beta)[0]
                 else:
-                    succ = minValue(gameState.generateSuccessor(agentID, action), agentID + 1, depth, a, b)[0]
-                if (succ < value):
-                    value = succ
-                    bestAct = action
-                if (value < a):
-                    return (value, bestAct)
-                b = min(b, value)
+                    successorValue = minValue(gameState.generateSuccessor(agentID, action), agentID + 1, depth, alpha, beta)[0]
+                if (successorValue < value):
+                    value = successorValue
+                    bestAction = action
+                if (value < alpha):
+                    return (value, bestAction)
+                beta = min(beta, value)
 
-            return (value, bestAct)
+            return (value, bestAction)
 
-        def maxValue(gameState, depth, a, b):
+        def maxValue(gameState, depth, alpha, beta):
             actList = gameState.getLegalActions(0)
             value = -(float("inf"))
-            bestAct = None
+            bestAction = None
             if len(actList) == 0 or gameState.isWin() or gameState.isLose() or depth == self.depth:
                 return (self.evaluationFunction(gameState), None)
             for action in actList:
-                succ = minValue(gameState.generateSuccessor(0, action), 1, depth, a, b)[0]
-                if (value < succ):
-                    value = succ
-                    bestAct = action
-                if (value > b):
-                    return (value, bestAct)
-                a = max(a, value)
+                successorValue = minValue(gameState.generateSuccessor(0, action), 1, depth, alpha, beta)[0]
+                if (value < successorValue):
+                    value = successorValue
+                    bestAction = action
+                if (value > beta):
+                    return (value, bestAction)
+                alpha = max(alpha, value)
 
-            return (value, bestAct)
+            return (value, bestAction)
 
         alpha = -(float("inf"))
         beta = float("inf")
@@ -235,23 +237,27 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
 
         def expectimax_search(state, agentIndex, depth):
+             #if not min layer and last ghost
             if agentIndex != state.getNumAgents():
                 moves = state.getLegalActions(agentIndex)
                 if len(moves) == 0:
                     return self.evaluationFunction(state)
                 next = (expectimax_search(state.generateSuccessor(agentIndex, move), agentIndex + 1, depth) for move in moves)
+                #if max layer, return max of layer below
                 if agentIndex == 0:
                     return max(next)
+                #if min layer, return expectimax values
                 else:
                     explist = list(next)
                     return sum(explist) / len(explist)
-
+            #if in min layer and last ghost
             else:
                 if depth == self.depth:
                     return self.evaluationFunction(state)
                 else:
                     return expectimax_search(state, 0, depth + 1)
 
+        #return action with the greatest minimax value
         result = max(gameState.getLegalActions(0), key=lambda x: expectimax_search(gameState.generateSuccessor(0, x), 1, 1))
         return result
 

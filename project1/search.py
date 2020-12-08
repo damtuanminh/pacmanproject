@@ -87,21 +87,27 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+    #check goal state
     if problem.isGoalState(problem.getStartState()):
         return []
     #st: ((x,y),[path])
     st = util.Stack()
     st.push((problem.getStartState(), []))
     #print(problem.getSuccessors(problem.getStartState()))
+    #mark visited states
     visited = []
+    #keep path from starting state to each state 
     route = []
     while not st.isEmpty():
+        #get first state in stack
         position,route = st.pop()
+        #check goal state
         if problem.isGoalState(position):
             return route
         if position not in visited:
             visited.append(position)
             successors = problem.getSuccessors(position)
+            #add next legal state
             for successor in list(successors):
                 if successor[0] not in visited:
                     updatedRoute = route + [successor[1]]
@@ -112,20 +118,25 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    #check goal state
     if problem.isGoalState(problem.getStartState()):
         return []
     #queue: ((x,y),[path])
     queue = util.Queue()
     queue.push((problem.getStartState(), []))
+    #mark visited states
     visited = []
+    #keep path from starting state to each state
     route = []
     while not queue.isEmpty():
         position,route = queue.pop()
+        #check goal state
         if problem.isGoalState(position):
             return route
         if position not in visited:
             visited.append(position)
             successors = problem.getSuccessors(position)
+            #add next legal state
             for successor in list(successors):
                 if successor[0] not in visited:
                     updatedRoute = route + [successor[1]]
@@ -141,7 +152,9 @@ def uniformCostSearch(problem):
     #queue: ((x,y),[path],priority)
     queue = util.PriorityQueue()
     queue.push((problem.getStartState(), []), 0)
+    #mark visited states
     visited = []
+    #keep path from starting state to each state
     route = []
     while not queue.isEmpty():
         position,route = queue.pop()
@@ -177,6 +190,7 @@ def nullHeuristic(state, problem=None):
     return 0
     
 from util import PriorityQueue
+#override PriorityQueueWithFunction 
 class MyPriorityQueueWithFunction(PriorityQueue):
     """
     Implements a priority queue with the same push/pop signature of the
@@ -193,7 +207,7 @@ class MyPriorityQueueWithFunction(PriorityQueue):
         "Adds an item to the queue with priority from the priority function"
         PriorityQueue.push(self, item, self.priorityFunction(self.problem,item,heuristic))
         
-# Calculate f(n) = g(n) + h(n)
+#Calculate f(n) = g(n) + h(n)
 def calculateHeuristic(problem, state, heuristic):
     return problem.getCostOfActions(state[1]) + heuristic(state[0],problem)
 
@@ -206,17 +220,21 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     queue = MyPriorityQueueWithFunction(problem, calculateHeuristic)
     
     param = (problem.getStartState(), [])
-    print(type(problem))
+    # print(type(problem))
     queue.push(param, heuristic)
+    #mark visited states
     visited = []
+    #keep path from starting state to each state
     route = []
     while not queue.isEmpty():
         position,route = queue.pop()
+        #check goal state
         if problem.isGoalState(position):
             return route
         if position not in visited:
             visited.append(position)
             successors = problem.getSuccessors(position)
+            #add next legal state
             for successor in list(successors):
                 if successor[0] not in visited:
                     updatedRoute = route + [successor[1]]

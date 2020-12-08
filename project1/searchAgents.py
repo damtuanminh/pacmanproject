@@ -288,6 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        #0-> not visited. 1-> visited 
         self.initialState = [0,0,0,0]
 
     def getStartState(self):
@@ -307,8 +308,9 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         for cornerStatus in state[1]:
             if cornerStatus == 0:
-                return False
+                return False #if one corner is not visited
 
+        #all corners are visited
         return True
         util.raiseNotDefined()
 
@@ -333,23 +335,23 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            x,y = state[0] # Get (x,y)
-            corn = state[1][:] # Get list of visited corners #chua hieu cho~ nay
+            x,y = state[0]
+            corn = state[1][:] #get list of visited corners
             print(corn)
 
-            # Find movement #
+            #find movement
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
-            # Pick valid movement #
+            #get valid movement 
             if not hitsWall:
 
-                # Check if we have reached a corner in the new position #
+                #check if we have reached a corner in the new position #
                 if (nextx, nexty) in self.corners:
-                    corn[self.corners.index((nextx, nexty))] = 1 # This corner is visited
+                    corn[self.corners.index((nextx, nexty))] = 1 #set corner is visited
 
-                nextState = ((nextx, nexty),corn) # Fix new state
+                nextState = ((nextx, nexty),corn) #fix new state
                 cost = 1
 
                 successors.append((nextState, action, cost))
@@ -389,17 +391,19 @@ def cornersHeuristic(state, problem):
 
     "*** YOUR CODE HERE ***"
     from util import manhattanDistance
-
+    #check goal state
     if problem.isGoalState(state):
         return 0
 
     else:
-        distancesFromGoals = []
+        #calculate all distances from goals (not visited corners)
+        distancesFromGoals = [] 
 
         for index,item in enumerate(state[1]):
+            #not visited corne
             if item == 0:
                 distancesFromGoals.append(manhattanDistance(state[0], corners[index]))
-
+        
         return max(distancesFromGoals)
 #    return 0 # Default to trivial solution
 
@@ -500,13 +504,13 @@ def foodHeuristic(state, problem):
     
     if problem.isGoalState(state):
         return 0
-        
+    #find real distances between position and all of the food
     distance = []
     flag = 0
     
     for item in foodList:
         distance.append(mazeDistance(position, item, problem.startingGameState))
-
+        #if we have a difficult maze stop search 
         if flag == 4 and problem.heuristicInfo['wallCount'] > 20:
             break
 
