@@ -184,7 +184,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 return (self.evaluationFunction(gameState), None)
             for action in actList:
                 if (agentID == gameState.getNumAgents() - 1):
-                    succ = maxValue(gameState.generateSuccessor(agentID, action), depth + 1, a, b)[0]
+                    succ = maxValue(gameState.generateSuccessor(agentID, action), 0, depth + 1, a, b)[0]
                 else:
                     succ = minValue(gameState.generateSuccessor(agentID, action), agentID + 1, depth, a, b)[0]
                 if (succ < value):
@@ -196,14 +196,14 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
             return (value, bestAct)
 
-        def maxValue(gameState, depth, a, b):
-            actList = gameState.getLegalActions(0)
+        def maxValue(gameState, agentID, depth, a, b):
+            actList = gameState.getLegalActions(agentID)
             value = -(float("inf"))
             bestAct = None
             if len(actList) == 0 or gameState.isWin() or gameState.isLose() or depth == self.depth:
                 return (self.evaluationFunction(gameState), None)
             for action in actList:
-                succ = minValue(gameState.generateSuccessor(0, action), 1, depth, a, b)[0]
+                succ = minValue(gameState.generateSuccessor(agentID, action), 1, depth, a, b)[0]
                 if (value < succ):
                     value = succ
                     bestAct = action
@@ -215,7 +215,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         alpha = -(float("inf"))
         beta = float("inf")
-        result = maxValue(gameState, 0, alpha, beta)[1]
+        result = maxValue(gameState, 0, 0, alpha, beta)[1]
         return result
 
         util.raiseNotDefined()
